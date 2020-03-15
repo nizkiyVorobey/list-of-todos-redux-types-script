@@ -1,26 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Dispatch, FC} from 'react';
+
+import { connect } from 'react-redux';
+
+import UserList from './components/UserList/UserList';
 import './App.css';
+import { loadUsers } from './store/store';
+import {AppActions} from "./actionsType/actionsType";
 
-function App() {
+const App: FC<any> = ({prepearedTodoList,loadingCondition, loadUsers}) => {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <>
+        {
+          prepearedTodoList.length === 0
+              ? (
+                  <button
+                      type="button"
+                      onClick={loadUsers}
+                      disabled={loadingCondition}
+                      className="load-btn"
+                  >
+                    Load
+                  </button>
+              )
+              : <UserList prepearedTodoList={prepearedTodoList} />
+        }
+        {loadingCondition && (
+            <p className="loading-text">Loading ...</p>
+        )}
+      </>
   );
-}
+};
 
-export default App;
+const mapStateToProps = (state: InitialStateInterface) => ({
+  loadingCondition: state.loadingCondition,
+  prepearedTodoList: state.prepearedTodoList,
+});
+
+const mapDispatchToProps = (dispatch: any) => ({
+  loadUsers: () => dispatch(loadUsers()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
